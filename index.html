@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بطاقات التهنئة</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-4">
+        <h1 class="text-3xl font-bold text-center mb-8">🎉 بطاقات التهنئة</h1>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-gradient-to-br from-blue-500 to-purple-600 p-6 rounded-lg text-white text-center">
+                <div class="text-4xl mb-4">🎊</div>
+                <h3 class="text-xl font-bold">تصميم كلاسيكي</h3>
+                <p class="mb-4">مجاني</p>
+                <button onclick="selectDesign(1)" class="bg-white text-blue-600 px-4 py-2 rounded">اختيار</button>
+            </div>
+            
+            <div class="bg-gradient-to-br from-pink-500 to-red-500 p-6 rounded-lg text-white text-center">
+                <div class="text-4xl mb-4">🌟</div>
+                <h3 class="text-xl font-bold">تصميم عصري</h3>
+                <p class="mb-4">مجاني</p>
+                <button onclick="selectDesign(2)" class="bg-white text-pink-600 px-4 py-2 rounded">اختيار</button>
+            </div>
+            
+            <div class="bg-gradient-to-br from-cyan-500 to-blue-500 p-6 rounded-lg text-white text-center">
+                <div class="text-4xl mb-4">✨</div>
+                <h3 class="text-xl font-bold">تصميم مميز</h3>
+                <p class="mb-4">10 ريال</p>
+                <button onclick="selectDesign(3)" class="bg-white text-cyan-600 px-4 py-2 rounded">اختيار</button>
+            </div>
+        </div>
+        
+        <div id="nameInput" class="hidden mt-8 max-w-md mx-auto">
+            <input type="text" id="userName" placeholder="اكتب اسمك" class="w-full p-3 border rounded mb-4">
+            <button onclick="createCard()" class="w-full bg-blue-600 text-white p-3 rounded">إنشاء البطاقة</button>
+        </div>
+        
+        <div id="preview" class="hidden mt-8 text-center">
+            <canvas id="canvas" class="mx-auto border rounded"></canvas>
+            <br><br>
+            <button onclick="download()" class="bg-green-600 text-white px-6 py-3 rounded">تحميل البطاقة</button>
+        </div>
+    </div>
+
+    <script>
+        let selectedDesign = 0;
+        
+        function selectDesign(id) {
+            selectedDesign = id;
+            document.getElementById('nameInput').classList.remove('hidden');
+        }
+        
+        function createCard() {
+            const name = document.getElementById('userName').value;
+            if (!name) return alert('اكتب اسمك أولاً');
+            
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 400;
+            canvas.height = 300;
+            
+            const colors = [
+                ['#667eea', '#764ba2'],
+                ['#f093fb', '#f5576c'], 
+                ['#4facfe', '#00f2fe']
+            ];
+            
+            const gradient = ctx.createLinearGradient(0, 0, 400, 300);
+            gradient.addColorStop(0, colors[selectedDesign-1][0]);
+            gradient.addColorStop(1, colors[selectedDesign-1][1]);
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 400, 300);
+            
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(name, 200, 150);
+            
+            document.getElementById('preview').classList.remove('hidden');
+        }
+        
+        function download() {
+            const canvas = document.getElementById('canvas');
+            const link = document.createElement('a');
+            link.download = 'card.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96dfff9a042e5550',t:'MTc1NTAwMTk3OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
