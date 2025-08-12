@@ -5,6 +5,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>بطاقات التهنئة</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;700&family=Tajawal:wght@400;700&family=Almarai:wght@400;700&family=Alexandria:wght@400;700&display=swap');
+        
+        .font-khalid { font-family: 'Khalid Art', 'Amiri', serif; }
+        .font-alexandria { font-family: 'Alexandria', sans-serif; }
+        .font-cairo { font-family: 'Cairo', sans-serif; }
+        .font-tajawal { font-family: 'Tajawal', sans-serif; }
+        .font-almarai { font-family: 'Almarai', sans-serif; }
+        .font-golden { font-family: 'Cairo', sans-serif; font-weight: 700; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        
+        .design-preview {
+            width: 100px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .design-preview:hover {
+            transform: scale(1.05);
+        }
+        
+        .uploaded-design {
+            position: relative;
+            display: inline-block;
+        }
+        .delete-design {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 12px;
+        }
+    </style>
 </head>
 <body class="bg-gray-100">
     <!-- Navigation -->
@@ -38,27 +80,8 @@
 
     <div class="container mx-auto p-4">
         
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-gradient-to-br from-blue-500 to-purple-600 p-6 rounded-lg text-white text-center">
-                <div class="text-4xl mb-4">🎊</div>
-                <h3 class="text-xl font-bold">تصميم كلاسيكي</h3>
-                <p class="mb-4">مجاني</p>
-                <button onclick="selectDesign(1)" class="bg-white text-blue-600 px-4 py-2 rounded">اختيار</button>
-            </div>
-            
-            <div class="bg-gradient-to-br from-pink-500 to-red-500 p-6 rounded-lg text-white text-center">
-                <div class="text-4xl mb-4">🌟</div>
-                <h3 class="text-xl font-bold">تصميم عصري</h3>
-                <p class="mb-4">مجاني</p>
-                <button onclick="selectDesign(2)" class="bg-white text-pink-600 px-4 py-2 rounded">اختيار</button>
-            </div>
-            
-            <div class="bg-gradient-to-br from-cyan-500 to-blue-500 p-6 rounded-lg text-white text-center">
-                <div class="text-4xl mb-4">✨</div>
-                <h3 class="text-xl font-bold">تصميم مميز</h3>
-                <p class="mb-4">10 ريال</p>
-                <button onclick="selectDesign(3)" class="bg-white text-cyan-600 px-4 py-2 rounded">اختيار</button>
-            </div>
+        <div id="designsGrid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Default designs will be loaded here -->
         </div>
         
         <!-- Payment Section -->
@@ -81,8 +104,25 @@
         </div>
 
         <div id="nameInput" class="hidden mt-8 max-w-md mx-auto bg-white p-6 rounded-lg shadow-lg">
-            <h3 class="text-2xl font-bold text-center mb-4">أدخل اسمك</h3>
+            <h3 class="text-2xl font-bold text-center mb-4">أدخل اسمك واختر المقاس</h3>
             <input type="text" id="userName" placeholder="اكتب اسمك هنا..." class="w-full p-3 border rounded-lg mb-4">
+            
+            <div class="mb-4">
+                <label class="block text-sm font-bold mb-2">اختر مقاس البطاقة:</label>
+                <select id="cardSize" class="w-full p-3 border rounded-lg">
+                    <option value="original">المقاس الأصلي للتصميم</option>
+                    <option value="800x600">800x600 - جودة عالية</option>
+                    <option value="1200x900">1200x900 - جودة فائقة</option>
+                    <option value="1920x1080">1920x1080 - Full HD</option>
+                    <option value="custom">مقاس مخصص</option>
+                </select>
+            </div>
+            
+            <div id="customSizeInputs" class="hidden mb-4 grid grid-cols-2 gap-3">
+                <input type="number" id="customWidth" placeholder="العرض" class="p-3 border rounded-lg">
+                <input type="number" id="customHeight" placeholder="الارتفاع" class="p-3 border rounded-lg">
+            </div>
+            
             <div class="flex gap-3">
                 <button onclick="goBack()" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-3 rounded-lg">رجوع</button>
                 <button onclick="createCard()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg">إنشاء البطاقة</button>
@@ -130,7 +170,15 @@
                                 <option value="paid">مدفوع</option>
                             </select>
                             <input type="number" id="newDesignPrice" placeholder="السعر (ريال)" class="w-full px-3 py-2 rounded text-gray-800">
+                            <input type="file" id="designImage" accept="image/*" class="w-full px-3 py-2 rounded text-gray-800 bg-white">
                             <button onclick="addDesign()" class="w-full bg-green-600 hover:bg-green-700 py-2 rounded">إضافة تصميم</button>
+                        </div>
+                        
+                        <div class="mt-6">
+                            <h4 class="font-bold mb-3">التصاميم المرفوعة:</h4>
+                            <div id="uploadedDesigns" class="grid grid-cols-2 gap-2">
+                                <!-- Uploaded designs will appear here -->
+                            </div>
                         </div>
                     </div>
 
@@ -139,12 +187,23 @@
                         <h3 class="text-xl font-bold mb-4">إعدادات النص</h3>
                         <div class="space-y-3">
                             <div>
+                                <label class="block mb-1">نوع الخط:</label>
+                                <select id="fontFamily" class="w-full px-3 py-2 rounded text-gray-800">
+                                    <option value="khalid" class="font-khalid">خط خالد الفني (Khalid Art)</option>
+                                    <option value="alexandria" class="font-alexandria">خط الإسكندرية (Alexandria)</option>
+                                    <option value="cairo" class="font-cairo">خط القاهرة (Cairo)</option>
+                                    <option value="tajawal" class="font-tajawal">خط تجوال (Tajawal)</option>
+                                    <option value="almarai" class="font-almarai">خط المراعي (Almarai)</option>
+                                    <option value="golden" class="font-golden">خط ذهبي للعناوين</option>
+                                </select>
+                            </div>
+                            <div>
                                 <label class="block mb-1">لون النص:</label>
                                 <input type="color" id="textColor" value="#ffffff" class="w-full h-10 rounded">
                             </div>
                             <div>
                                 <label class="block mb-1">حجم النص:</label>
-                                <input type="range" id="fontSize" min="20" max="60" value="32" class="w-full">
+                                <input type="range" id="fontSize" min="20" max="80" value="32" class="w-full">
                                 <span id="fontSizeValue" class="text-sm">32px</span>
                             </div>
                             <div>
@@ -153,6 +212,17 @@
                                     <option value="center">وسط</option>
                                     <option value="top">أعلى</option>
                                     <option value="bottom">أسفل</option>
+                                    <option value="left">يسار</option>
+                                    <option value="right">يمين</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block mb-1">تأثيرات النص:</label>
+                                <select id="textEffect" class="w-full px-3 py-2 rounded text-gray-800">
+                                    <option value="none">بدون تأثير</option>
+                                    <option value="shadow">ظل</option>
+                                    <option value="glow">توهج</option>
+                                    <option value="outline">حدود</option>
                                 </select>
                             </div>
                             <button onclick="saveTextSettings()" class="w-full bg-blue-600 hover:bg-blue-700 py-2 rounded">حفظ إعدادات النص</button>
@@ -161,22 +231,40 @@
 
                     <!-- Canvas Settings -->
                     <div class="bg-white bg-opacity-10 rounded-lg p-6">
-                        <h3 class="text-xl font-bold mb-4">إعدادات الصورة</h3>
+                        <h3 class="text-xl font-bold mb-4">إعدادات الصورة والمقاس</h3>
                         <div class="space-y-3">
                             <div>
-                                <label class="block mb-1">العرض (بكسل):</label>
+                                <label class="block mb-1">مقاس البطاقة الافتراضي:</label>
+                                <select id="defaultCardSize" class="w-full px-3 py-2 rounded text-gray-800">
+                                    <option value="original">المقاس الأصلي للتصميم</option>
+                                    <option value="800x600">800x600 - جودة عالية</option>
+                                    <option value="1200x900">1200x900 - جودة فائقة</option>
+                                    <option value="1920x1080">1920x1080 - Full HD</option>
+                                    <option value="custom">مقاس مخصص</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block mb-1">العرض الافتراضي (بكسل):</label>
                                 <input type="number" id="canvasWidth" value="800" min="400" max="2000" class="w-full px-3 py-2 rounded text-gray-800">
                             </div>
                             <div>
-                                <label class="block mb-1">الارتفاع (بكسل):</label>
+                                <label class="block mb-1">الارتفاع الافتراضي (بكسل):</label>
                                 <input type="number" id="canvasHeight" value="600" min="300" max="2000" class="w-full px-3 py-2 rounded text-gray-800">
                             </div>
                             <div>
                                 <label class="block mb-1">جودة التصدير:</label>
                                 <select id="exportQuality" class="w-full px-3 py-2 rounded text-gray-800">
-                                    <option value="0.8">جودة عادية (80%)</option>
+                                    <option value="0.7">جودة عادية (70%)</option>
+                                    <option value="0.8">جودة جيدة (80%)</option>
                                     <option value="0.9">جودة عالية (90%)</option>
                                     <option value="1.0">جودة فائقة (100%)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block mb-1">تنسيق الحفظ:</label>
+                                <select id="exportFormat" class="w-full px-3 py-2 rounded text-gray-800">
+                                    <option value="png">PNG - جودة عالية</option>
+                                    <option value="jpeg">JPEG - حجم أصغر</option>
                                 </select>
                             </div>
                             <button onclick="saveCanvasSettings()" class="w-full bg-green-600 hover:bg-green-700 py-2 rounded">حفظ إعدادات الصورة</button>
@@ -190,12 +278,17 @@
                             <input type="text" id="bankAccount" value="1234567890" placeholder="رقم الحساب البنكي" class="w-full px-3 py-2 rounded text-gray-800">
                             <input type="text" id="bankName" value="البنك الأهلي" placeholder="اسم البنك" class="w-full px-3 py-2 rounded text-gray-800">
                             <input type="text" id="whatsappPayment" value="966501234567" placeholder="واتساب الإيصالات" class="w-full px-3 py-2 rounded text-gray-800">
+                            <input type="url" id="paymentLink" placeholder="رابط الدفع الإلكتروني (اختياري)" class="w-full px-3 py-2 rounded text-gray-800">
                             <select id="currency" class="w-full px-3 py-2 rounded text-gray-800">
                                 <option value="ريال">ريال سعودي</option>
                                 <option value="درهم">درهم إماراتي</option>
                                 <option value="دينار">دينار كويتي</option>
                                 <option value="دولار">دولار أمريكي</option>
                             </select>
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" id="enablePaymentLink" class="rounded">
+                                <label for="enablePaymentLink" class="text-sm">تفعيل رابط الدفع الإلكتروني</label>
+                            </div>
                             <button onclick="savePaymentSettings()" class="w-full bg-green-600 hover:bg-green-700 py-2 rounded">حفظ إعدادات الدفع</button>
                         </div>
                     </div>
@@ -238,19 +331,110 @@
 
     <script>
         let selectedDesign = 0;
+        let selectedDesignData = null;
+        let customDesigns = [];
         let settings = {
             textColor: '#ffffff',
             fontSize: 32,
+            fontFamily: 'cairo',
             textPosition: 'center',
+            textEffect: 'none',
             canvasWidth: 800,
             canvasHeight: 600,
-            exportQuality: 1.0
+            exportQuality: 1.0,
+            exportFormat: 'png',
+            defaultCardSize: 'original'
         };
         let stats = {
             totalCards: 0,
             totalDownloads: 0,
             totalPayments: 0
         };
+        let paymentSettings = {
+            enablePaymentLink: false,
+            paymentLink: ''
+        };
+
+        // Initialize default designs
+        function initializeDefaultDesigns() {
+            const defaultDesigns = [
+                {
+                    id: 1,
+                    name: 'تصميم كلاسيكي',
+                    type: 'free',
+                    price: 0,
+                    colors: ['#667eea', '#764ba2'],
+                    emoji: '🎊',
+                    originalWidth: 800,
+                    originalHeight: 600
+                },
+                {
+                    id: 2,
+                    name: 'تصميم عصري',
+                    type: 'free',
+                    price: 0,
+                    colors: ['#f093fb', '#f5576c'],
+                    emoji: '🌟',
+                    originalWidth: 800,
+                    originalHeight: 600
+                },
+                {
+                    id: 3,
+                    name: 'تصميم مميز',
+                    type: 'paid',
+                    price: 10,
+                    colors: ['#4facfe', '#00f2fe'],
+                    emoji: '✨',
+                    originalWidth: 800,
+                    originalHeight: 600
+                }
+            ];
+            
+            loadCustomDesigns();
+            renderDesigns([...defaultDesigns, ...customDesigns]);
+        }
+
+        function loadCustomDesigns() {
+            const saved = localStorage.getItem('customDesigns');
+            if (saved) {
+                customDesigns = JSON.parse(saved);
+            }
+        }
+
+        function saveCustomDesigns() {
+            localStorage.setItem('customDesigns', JSON.stringify(customDesigns));
+        }
+
+        function renderDesigns(designs) {
+            const grid = document.getElementById('designsGrid');
+            grid.innerHTML = '';
+            
+            designs.forEach(design => {
+                const designCard = document.createElement('div');
+                designCard.className = 'bg-white rounded-lg shadow-lg overflow-hidden cursor-pointer hover:scale-105 transition-transform';
+                designCard.onclick = () => selectDesign(design.id, design);
+                
+                const gradientStyle = design.image ? 
+                    `background-image: url(${design.image}); background-size: cover; background-position: center;` :
+                    `background: linear-gradient(135deg, ${design.colors[0]} 0%, ${design.colors[1]} 100%);`;
+                
+                designCard.innerHTML = `
+                    <div class="h-48 flex items-center justify-center text-white" style="${gradientStyle}">
+                        <div class="text-center">
+                            <div class="text-5xl mb-2">${design.emoji || '🎨'}</div>
+                            <h3 class="text-xl font-bold">${design.name}</h3>
+                            <p class="text-sm ${design.type === 'paid' ? 'bg-yellow-500 px-2 py-1 rounded' : ''}">${design.type === 'paid' ? design.price + ' ريال' : 'مجاني'}</p>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h4 class="font-bold">${design.name}</h4>
+                        <p class="text-gray-600 text-sm">${design.type === 'paid' ? 'تصميم مدفوع مميز' : 'تصميم مجاني'}</p>
+                    </div>
+                `;
+                
+                grid.appendChild(designCard);
+            });
+        }
 
         // Load stats from localStorage
         function loadStats() {
@@ -272,11 +456,12 @@
             document.getElementById('totalPayments').textContent = stats.totalPayments + ' ريال';
         }
 
-        function selectDesign(id) {
+        function selectDesign(id, designData) {
             selectedDesign = id;
+            selectedDesignData = designData;
             hideAllSections();
             
-            if (id === 3) {
+            if (designData && designData.type === 'paid') {
                 document.getElementById('paymentSection').classList.remove('hidden');
             } else {
                 document.getElementById('nameInput').classList.remove('hidden');
@@ -298,19 +483,30 @@
         }
 
         function payBank() {
-            const account = document.getElementById('bankAccount')?.value || '1234567890';
-            const bank = document.getElementById('bankName')?.value || 'البنك الأهلي';
-            const whatsapp = document.getElementById('whatsappPayment')?.value || '966501234567';
-            
-            alert(`معلومات التحويل البنكي:\n\nرقم الحساب: ${account}\nاسم البنك: ${bank}\n\nبعد التحويل، أرسل صورة الإيصال للواتساب:\n${whatsapp}`);
-            proceedAfterPayment();
+            if (paymentSettings.enablePaymentLink && paymentSettings.paymentLink) {
+                window.open(paymentSettings.paymentLink, '_blank');
+                setTimeout(() => {
+                    if (confirm('هل تم الدفع بنجاح؟')) {
+                        stats.totalPayments += selectedDesignData.price;
+                        saveStats();
+                        proceedAfterPayment();
+                    }
+                }, 3000);
+            } else {
+                const account = document.getElementById('bankAccount')?.value || '1234567890';
+                const bank = document.getElementById('bankName')?.value || 'البنك الأهلي';
+                const whatsapp = document.getElementById('whatsappPayment')?.value || '966501234567';
+                
+                alert(`معلومات التحويل البنكي:\n\nرقم الحساب: ${account}\nاسم البنك: ${bank}\n\nبعد التحويل، أرسل صورة الإيصال للواتساب:\n${whatsapp}`);
+                proceedAfterPayment();
+            }
         }
 
         function payApple() {
             alert('جاري معالجة الدفع عبر Apple Pay...');
             setTimeout(() => {
                 alert('تم الدفع بنجاح! ✅');
-                stats.totalPayments += 10;
+                stats.totalPayments += selectedDesignData.price;
                 saveStats();
                 proceedAfterPayment();
             }, 2000);
@@ -325,58 +521,132 @@
             const name = document.getElementById('userName').value.trim();
             if (!name) return alert('يرجى كتابة اسمك أولاً');
             
+            // Get selected size
+            const sizeOption = document.getElementById('cardSize').value;
+            let canvasWidth, canvasHeight;
+            
+            if (sizeOption === 'original') {
+                canvasWidth = selectedDesignData?.originalWidth || 800;
+                canvasHeight = selectedDesignData?.originalHeight || 600;
+            } else if (sizeOption === 'custom') {
+                canvasWidth = parseInt(document.getElementById('customWidth').value) || 800;
+                canvasHeight = parseInt(document.getElementById('customHeight').value) || 600;
+            } else {
+                const [w, h] = sizeOption.split('x').map(Number);
+                canvasWidth = w;
+                canvasHeight = h;
+            }
+            
             document.getElementById('nameInput').classList.add('hidden');
             document.getElementById('preview').classList.remove('hidden');
             
-            drawCard(name);
+            drawCard(name, canvasWidth, canvasHeight);
             stats.totalCards++;
             saveStats();
         }
         
-        function drawCard(name) {
+        function drawCard(name, canvasWidth, canvasHeight) {
             const canvas = document.getElementById('canvas');
             const ctx = canvas.getContext('2d');
             
-            // Use admin settings for canvas size
-            canvas.width = settings.canvasWidth;
-            canvas.height = settings.canvasHeight;
+            canvas.width = canvasWidth || settings.canvasWidth;
+            canvas.height = canvasHeight || settings.canvasHeight;
             
-            const colors = [
-                ['#667eea', '#764ba2'],
-                ['#f093fb', '#f5576c'], 
-                ['#4facfe', '#00f2fe']
-            ];
+            // Draw background
+            if (selectedDesignData && selectedDesignData.image) {
+                const img = new Image();
+                img.onload = function() {
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    drawTextOnCanvas(ctx, name, canvas.width, canvas.height);
+                };
+                img.src = selectedDesignData.image;
+            } else {
+                // Create gradient background
+                const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                if (selectedDesignData && selectedDesignData.colors) {
+                    gradient.addColorStop(0, selectedDesignData.colors[0]);
+                    gradient.addColorStop(1, selectedDesignData.colors[1]);
+                } else {
+                    gradient.addColorStop(0, '#667eea');
+                    gradient.addColorStop(1, '#764ba2');
+                }
+                
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Add decorative emoji
+                ctx.font = `${Math.floor(settings.fontSize * 1.8)}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.fillStyle = 'rgba(255,255,255,0.3)';
+                const emoji = selectedDesignData?.emoji || '🎊';
+                ctx.fillText(emoji, canvas.width/2, canvas.height/3);
+                
+                drawTextOnCanvas(ctx, name, canvas.width, canvas.height);
+            }
+        }
+
+        function drawTextOnCanvas(ctx, name, canvasWidth, canvasHeight) {
+            // Set font family
+            const fontFamilies = {
+                khalid: 'Khalid Art, Amiri, serif',
+                alexandria: 'Alexandria, sans-serif',
+                cairo: 'Cairo, sans-serif',
+                tajawal: 'Tajawal, sans-serif',
+                almarai: 'Almarai, sans-serif',
+                golden: 'Cairo, sans-serif'
+            };
             
-            // Create gradient background
-            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-            gradient.addColorStop(0, colors[selectedDesign-1][0]);
-            gradient.addColorStop(1, colors[selectedDesign-1][1]);
-            
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            // Add decorative emoji
-            ctx.font = `${Math.floor(settings.fontSize * 1.8)}px Arial`;
-            ctx.textAlign = 'center';
-            ctx.fillStyle = 'rgba(255,255,255,0.3)';
-            const emojis = ['🎊', '🌟', '✨'];
-            ctx.fillText(emojis[selectedDesign-1], canvas.width/2, canvas.height/3);
-            
-            // Add user name with admin settings
-            ctx.font = `bold ${settings.fontSize}px Arial`;
+            const fontFamily = fontFamilies[settings.fontFamily] || 'Arial, sans-serif';
+            ctx.font = `bold ${settings.fontSize}px ${fontFamily}`;
             ctx.fillStyle = settings.textColor;
+            
+            // Apply text effects
+            if (settings.textEffect === 'shadow') {
+                ctx.shadowColor = 'rgba(0,0,0,0.5)';
+                ctx.shadowBlur = 4;
+                ctx.shadowOffsetX = 2;
+                ctx.shadowOffsetY = 2;
+            } else if (settings.textEffect === 'glow') {
+                ctx.shadowColor = settings.textColor;
+                ctx.shadowBlur = 10;
+            } else if (settings.textEffect === 'outline') {
+                ctx.strokeStyle = '#000000';
+                ctx.lineWidth = 2;
+            }
+            
+            // Set text position
+            let textX = canvasWidth / 2;
+            let textY = canvasHeight / 2 + 20;
+            
             ctx.textAlign = 'center';
+            if (settings.textPosition === 'top') {
+                textY = canvasHeight / 4;
+            } else if (settings.textPosition === 'bottom') {
+                textY = canvasHeight - canvasHeight / 4;
+            } else if (settings.textPosition === 'left') {
+                textX = canvasWidth / 4;
+                ctx.textAlign = 'left';
+            } else if (settings.textPosition === 'right') {
+                textX = canvasWidth - canvasWidth / 4;
+                ctx.textAlign = 'right';
+            }
             
-            let textY = canvas.height/2 + 20;
-            if (settings.textPosition === 'top') textY = canvas.height/4;
-            else if (settings.textPosition === 'bottom') textY = canvas.height - canvas.height/4;
+            // Draw text
+            if (settings.textEffect === 'outline') {
+                ctx.strokeText(name, textX, textY);
+            }
+            ctx.fillText(name, textX, textY);
             
-            ctx.fillText(name, canvas.width/2, textY);
+            // Reset shadow
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
             
             // Add decorative border
             ctx.strokeStyle = 'rgba(255,255,255,0.5)';
             ctx.lineWidth = 4;
-            ctx.strokeRect(10, 10, canvas.width-20, canvas.height-20);
+            ctx.strokeRect(10, 10, canvasWidth-20, canvasHeight-20);
         }
 
         function editCard() {
@@ -387,13 +657,16 @@
         function download() {
             const canvas = document.getElementById('canvas');
             const link = document.createElement('a');
-            link.download = `بطاقة-تهنئة-${Date.now()}.png`;
-            link.href = canvas.toDataURL('image/png', settings.exportQuality);
+            const format = settings.exportFormat || 'png';
+            const mimeType = format === 'jpeg' ? 'image/jpeg' : 'image/png';
+            
+            link.download = `بطاقة-تهنئة-${Date.now()}.${format}`;
+            link.href = canvas.toDataURL(mimeType, settings.exportQuality);
             link.click();
             
             stats.totalDownloads++;
             saveStats();
-            alert('تم تحميل البطاقة بجودة عالية! 🎉');
+            alert(`تم تحميل البطاقة بجودة ${settings.exportQuality * 100}% وتنسيق ${format.toUpperCase()}! 🎉`);
         }
 
         // Social functions
@@ -465,33 +738,122 @@
             document.getElementById('textColor').value = settings.textColor;
             document.getElementById('fontSize').value = settings.fontSize;
             document.getElementById('fontSizeValue').textContent = settings.fontSize + 'px';
+            document.getElementById('fontFamily').value = settings.fontFamily;
             document.getElementById('textPosition').value = settings.textPosition;
+            document.getElementById('textEffect').value = settings.textEffect;
             document.getElementById('canvasWidth').value = settings.canvasWidth;
             document.getElementById('canvasHeight').value = settings.canvasHeight;
             document.getElementById('exportQuality').value = settings.exportQuality;
+            document.getElementById('exportFormat').value = settings.exportFormat;
+            document.getElementById('defaultCardSize').value = settings.defaultCardSize;
+            document.getElementById('enablePaymentLink').checked = paymentSettings.enablePaymentLink;
+            document.getElementById('paymentLink').value = paymentSettings.paymentLink;
+            
+            renderUploadedDesigns();
         }
 
         function addDesign() {
             const name = document.getElementById('newDesignName').value;
             const type = document.getElementById('newDesignType').value;
             const price = document.getElementById('newDesignPrice').value || 0;
+            const imageFile = document.getElementById('designImage').files[0];
             
             if (!name) {
                 alert('يرجى إدخال اسم التصميم');
                 return;
             }
             
-            alert(`تم إضافة التصميم بنجاح!\n\nالاسم: ${name}\nالنوع: ${type === 'free' ? 'مجاني' : 'مدفوع'}\nالسعر: ${price} ريال`);
+            const newDesign = {
+                id: Date.now(),
+                name: name,
+                type: type,
+                price: parseInt(price),
+                emoji: '🎨',
+                originalWidth: 800,
+                originalHeight: 600,
+                isCustom: true
+            };
+            
+            if (imageFile) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    newDesign.image = e.target.result;
+                    customDesigns.push(newDesign);
+                    saveCustomDesigns();
+                    renderUploadedDesigns();
+                    initializeDefaultDesigns();
+                    alert(`تم إضافة التصميم "${name}" بنجاح! 🎉`);
+                };
+                reader.readAsDataURL(imageFile);
+            } else {
+                // Create gradient design
+                const colors = [
+                    ['#667eea', '#764ba2'],
+                    ['#f093fb', '#f5576c'],
+                    ['#4facfe', '#00f2fe'],
+                    ['#a8edea', '#fed6e3'],
+                    ['#ff9a9e', '#fecfef']
+                ];
+                newDesign.colors = colors[Math.floor(Math.random() * colors.length)];
+                customDesigns.push(newDesign);
+                saveCustomDesigns();
+                renderUploadedDesigns();
+                initializeDefaultDesigns();
+                alert(`تم إضافة التصميم "${name}" بنجاح! 🎉`);
+            }
             
             // Clear form
             document.getElementById('newDesignName').value = '';
             document.getElementById('newDesignPrice').value = '';
+            document.getElementById('designImage').value = '';
+        }
+
+        function renderUploadedDesigns() {
+            const container = document.getElementById('uploadedDesigns');
+            container.innerHTML = '';
+            
+            customDesigns.forEach(design => {
+                const designDiv = document.createElement('div');
+                designDiv.className = 'uploaded-design';
+                
+                const preview = document.createElement('div');
+                preview.className = 'design-preview';
+                
+                if (design.image) {
+                    preview.style.backgroundImage = `url(${design.image})`;
+                    preview.style.backgroundSize = 'cover';
+                    preview.style.backgroundPosition = 'center';
+                } else {
+                    preview.style.background = `linear-gradient(135deg, ${design.colors[0]} 0%, ${design.colors[1]} 100%)`;
+                }
+                
+                const deleteBtn = document.createElement('div');
+                deleteBtn.className = 'delete-design';
+                deleteBtn.innerHTML = '×';
+                deleteBtn.onclick = () => deleteDesign(design.id);
+                
+                designDiv.appendChild(preview);
+                designDiv.appendChild(deleteBtn);
+                container.appendChild(designDiv);
+            });
+        }
+
+        function deleteDesign(designId) {
+            if (confirm('هل أنت متأكد من حذف هذا التصميم؟')) {
+                customDesigns = customDesigns.filter(d => d.id !== designId);
+                saveCustomDesigns();
+                renderUploadedDesigns();
+                initializeDefaultDesigns();
+                alert('تم حذف التصميم بنجاح!');
+            }
         }
 
         function saveTextSettings() {
             settings.textColor = document.getElementById('textColor').value;
             settings.fontSize = parseInt(document.getElementById('fontSize').value);
+            settings.fontFamily = document.getElementById('fontFamily').value;
             settings.textPosition = document.getElementById('textPosition').value;
+            settings.textEffect = document.getElementById('textEffect').value;
             
             localStorage.setItem('cardSettings', JSON.stringify(settings));
             alert('تم حفظ إعدادات النص بنجاح! ✅');
@@ -501,12 +863,18 @@
             settings.canvasWidth = parseInt(document.getElementById('canvasWidth').value);
             settings.canvasHeight = parseInt(document.getElementById('canvasHeight').value);
             settings.exportQuality = parseFloat(document.getElementById('exportQuality').value);
+            settings.exportFormat = document.getElementById('exportFormat').value;
+            settings.defaultCardSize = document.getElementById('defaultCardSize').value;
             
             localStorage.setItem('cardSettings', JSON.stringify(settings));
-            alert('تم حفظ إعدادات الصورة بنجاح! ✅\nالجودة الآن: ' + (settings.exportQuality * 100) + '%');
+            alert('تم حفظ إعدادات الصورة والمقاس بنجاح! ✅\nالجودة: ' + (settings.exportQuality * 100) + '%\nالتنسيق: ' + settings.exportFormat.toUpperCase());
         }
 
         function savePaymentSettings() {
+            paymentSettings.enablePaymentLink = document.getElementById('enablePaymentLink').checked;
+            paymentSettings.paymentLink = document.getElementById('paymentLink').value;
+            
+            localStorage.setItem('paymentSettings', JSON.stringify(paymentSettings));
             alert('تم حفظ إعدادات الدفع بنجاح! ✅');
         }
 
@@ -526,6 +894,7 @@
         // Event listeners
         document.addEventListener('DOMContentLoaded', function() {
             loadStats();
+            initializeDefaultDesigns();
             
             // Load saved settings
             const savedSettings = localStorage.getItem('cardSettings');
@@ -533,11 +902,30 @@
                 settings = { ...settings, ...JSON.parse(savedSettings) };
             }
             
+            // Load payment settings
+            const savedPaymentSettings = localStorage.getItem('paymentSettings');
+            if (savedPaymentSettings) {
+                paymentSettings = { ...paymentSettings, ...JSON.parse(savedPaymentSettings) };
+            }
+            
             // Font size slider
             const fontSizeSlider = document.getElementById('fontSize');
             if (fontSizeSlider) {
                 fontSizeSlider.addEventListener('input', function() {
                     document.getElementById('fontSizeValue').textContent = this.value + 'px';
+                });
+            }
+            
+            // Custom size inputs event listener
+            const cardSizeSelect = document.getElementById('cardSize');
+            if (cardSizeSelect) {
+                cardSizeSelect.addEventListener('change', function() {
+                    const customInputs = document.getElementById('customSizeInputs');
+                    if (this.value === 'custom') {
+                        customInputs.classList.remove('hidden');
+                    } else {
+                        customInputs.classList.add('hidden');
+                    }
                 });
             }
             
@@ -550,5 +938,5 @@
             });
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96e05c3e553ce8e2',t:'MTc1NTAwNTc3Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96e0a5ce12343f39',t:'MTc1NTAwODc4NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
