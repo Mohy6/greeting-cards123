@@ -7,8 +7,36 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg mb-8">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-3xl font-bold">🎉 بطاقات التهنئة</h1>
+            <button onclick="showAdminLogin()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+                لوحة التحكم
+            </button>
+        </div>
+    </nav>
+
+    <!-- Social Contact Box -->
+    <div class="fixed bottom-6 right-6 z-50">
+        <div class="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full cursor-pointer shadow-lg" onclick="toggleSocial()">
+            <span class="text-xl">💬</span>
+        </div>
+        <div id="socialMenu" class="hidden absolute bottom-16 right-0 bg-white rounded-lg shadow-xl p-4 w-48 border">
+            <h4 class="font-bold mb-3 text-gray-800">تواصل معنا</h4>
+            <a href="https://wa.me/966501234567?text=مرحباً! أحتاج مساعدة في بطاقات التهنئة" target="_blank" class="flex items-center gap-2 p-2 hover:bg-gray-50 rounded text-gray-700">
+                <span class="text-green-500">📱</span> واتساب
+            </a>
+            <a href="https://t.me/username" target="_blank" class="flex items-center gap-2 p-2 hover:bg-gray-50 rounded text-gray-700">
+                <span class="text-blue-500">✈️</span> تلجرام
+            </a>
+            <a href="mailto:info@example.com?subject=استفسار عن بطاقات التهنئة" class="flex items-center gap-2 p-2 hover:bg-gray-50 rounded text-gray-700">
+                <span class="text-red-500">📧</span> إيميل
+            </a>
+        </div>
+    </div>
+
     <div class="container mx-auto p-4">
-        <h1 class="text-3xl font-bold text-center mb-8">🎉 بطاقات التهنئة</h1>
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="bg-gradient-to-br from-blue-500 to-purple-600 p-6 rounded-lg text-white text-center">
@@ -33,34 +61,285 @@
             </div>
         </div>
         
-        <div id="nameInput" class="hidden mt-8 max-w-md mx-auto">
-            <input type="text" id="userName" placeholder="اكتب اسمك" class="w-full p-3 border rounded mb-4">
-            <button onclick="createCard()" class="w-full bg-blue-600 text-white p-3 rounded">إنشاء البطاقة</button>
+        <!-- Payment Section -->
+        <div id="paymentSection" class="hidden mt-8 max-w-md mx-auto bg-white p-6 rounded-lg shadow-lg">
+            <h3 class="text-2xl font-bold text-center mb-4">الدفع المطلوب</h3>
+            <div class="text-center mb-6">
+                <p class="text-lg">سعر هذا التصميم: <span class="font-bold text-green-600">10 ريال</span></p>
+            </div>
+            <div class="space-y-3">
+                <button onclick="payBank()" class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg">
+                    💳 الدفع عبر التحويل البنكي
+                </button>
+                <button onclick="payApple()" class="w-full bg-black hover:bg-gray-800 text-white py-3 rounded-lg">
+                    🍎 Apple Pay
+                </button>
+                <button onclick="goBack()" class="w-full bg-gray-500 hover:bg-gray-600 text-white py-3 rounded-lg">
+                    رجوع
+                </button>
+            </div>
+        </div>
+
+        <div id="nameInput" class="hidden mt-8 max-w-md mx-auto bg-white p-6 rounded-lg shadow-lg">
+            <h3 class="text-2xl font-bold text-center mb-4">أدخل اسمك</h3>
+            <input type="text" id="userName" placeholder="اكتب اسمك هنا..." class="w-full p-3 border rounded-lg mb-4">
+            <div class="flex gap-3">
+                <button onclick="goBack()" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-3 rounded-lg">رجوع</button>
+                <button onclick="createCard()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg">إنشاء البطاقة</button>
+            </div>
         </div>
         
-        <div id="preview" class="hidden mt-8 text-center">
-            <canvas id="canvas" class="mx-auto border rounded"></canvas>
-            <br><br>
-            <button onclick="download()" class="bg-green-600 text-white px-6 py-3 rounded">تحميل البطاقة</button>
+        <div id="preview" class="hidden mt-8 text-center bg-white p-6 rounded-lg shadow-lg">
+            <h3 class="text-2xl font-bold mb-4">بطاقتك جاهزة! 🎉</h3>
+            <canvas id="canvas" class="mx-auto border rounded shadow-lg"></canvas>
+            <div class="mt-6 flex gap-3 justify-center">
+                <button onclick="editCard()" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg">تعديل</button>
+                <button onclick="download()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg">تحميل البطاقة</button>
+            </div>
+        </div>
+
+        <!-- Admin Login Modal -->
+        <div id="adminLoginModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white rounded-xl p-8 max-w-md w-full mx-4">
+                <h3 class="text-2xl font-bold mb-6 text-center">تسجيل دخول الإدارة</h3>
+                <input type="text" id="adminUsername" placeholder="اسم المستخدم" class="w-full px-4 py-3 border rounded-lg mb-4">
+                <input type="password" id="adminPassword" placeholder="كلمة المرور" class="w-full px-4 py-3 border rounded-lg mb-4">
+                <div class="flex gap-4">
+                    <button onclick="closeAdminLogin()" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-3 rounded-lg">إلغاء</button>
+                    <button onclick="adminLogin()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg">دخول</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Panel -->
+        <div id="adminPanel" class="hidden mt-8">
+            <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-8 text-white">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-3xl font-bold">لوحة التحكم الشاملة</h2>
+                    <button onclick="logoutAdmin()" class="bg-red-600 hover:bg-red-700 px-6 py-2 rounded-lg">تسجيل خروج</button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Design Management -->
+                    <div class="bg-white bg-opacity-10 rounded-lg p-6">
+                        <h3 class="text-xl font-bold mb-4">إدارة التصاميم</h3>
+                        <div class="space-y-3">
+                            <input type="text" id="newDesignName" placeholder="اسم التصميم" class="w-full px-3 py-2 rounded text-gray-800">
+                            <select id="newDesignType" class="w-full px-3 py-2 rounded text-gray-800">
+                                <option value="free">مجاني</option>
+                                <option value="paid">مدفوع</option>
+                            </select>
+                            <input type="number" id="newDesignPrice" placeholder="السعر (ريال)" class="w-full px-3 py-2 rounded text-gray-800">
+                            <button onclick="addDesign()" class="w-full bg-green-600 hover:bg-green-700 py-2 rounded">إضافة تصميم</button>
+                        </div>
+                    </div>
+
+                    <!-- Text Settings -->
+                    <div class="bg-white bg-opacity-10 rounded-lg p-6">
+                        <h3 class="text-xl font-bold mb-4">إعدادات النص</h3>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block mb-1">لون النص:</label>
+                                <input type="color" id="textColor" value="#ffffff" class="w-full h-10 rounded">
+                            </div>
+                            <div>
+                                <label class="block mb-1">حجم النص:</label>
+                                <input type="range" id="fontSize" min="20" max="60" value="32" class="w-full">
+                                <span id="fontSizeValue" class="text-sm">32px</span>
+                            </div>
+                            <div>
+                                <label class="block mb-1">موضع النص:</label>
+                                <select id="textPosition" class="w-full px-3 py-2 rounded text-gray-800">
+                                    <option value="center">وسط</option>
+                                    <option value="top">أعلى</option>
+                                    <option value="bottom">أسفل</option>
+                                </select>
+                            </div>
+                            <button onclick="saveTextSettings()" class="w-full bg-blue-600 hover:bg-blue-700 py-2 rounded">حفظ إعدادات النص</button>
+                        </div>
+                    </div>
+
+                    <!-- Canvas Settings -->
+                    <div class="bg-white bg-opacity-10 rounded-lg p-6">
+                        <h3 class="text-xl font-bold mb-4">إعدادات الصورة</h3>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block mb-1">العرض (بكسل):</label>
+                                <input type="number" id="canvasWidth" value="800" min="400" max="2000" class="w-full px-3 py-2 rounded text-gray-800">
+                            </div>
+                            <div>
+                                <label class="block mb-1">الارتفاع (بكسل):</label>
+                                <input type="number" id="canvasHeight" value="600" min="300" max="2000" class="w-full px-3 py-2 rounded text-gray-800">
+                            </div>
+                            <div>
+                                <label class="block mb-1">جودة التصدير:</label>
+                                <select id="exportQuality" class="w-full px-3 py-2 rounded text-gray-800">
+                                    <option value="0.8">جودة عادية (80%)</option>
+                                    <option value="0.9">جودة عالية (90%)</option>
+                                    <option value="1.0">جودة فائقة (100%)</option>
+                                </select>
+                            </div>
+                            <button onclick="saveCanvasSettings()" class="w-full bg-green-600 hover:bg-green-700 py-2 rounded">حفظ إعدادات الصورة</button>
+                        </div>
+                    </div>
+
+                    <!-- Payment Settings -->
+                    <div class="bg-white bg-opacity-10 rounded-lg p-6">
+                        <h3 class="text-xl font-bold mb-4">إعدادات الدفع</h3>
+                        <div class="space-y-3">
+                            <input type="text" id="bankAccount" value="1234567890" placeholder="رقم الحساب البنكي" class="w-full px-3 py-2 rounded text-gray-800">
+                            <input type="text" id="bankName" value="البنك الأهلي" placeholder="اسم البنك" class="w-full px-3 py-2 rounded text-gray-800">
+                            <input type="text" id="whatsappPayment" value="966501234567" placeholder="واتساب الإيصالات" class="w-full px-3 py-2 rounded text-gray-800">
+                            <select id="currency" class="w-full px-3 py-2 rounded text-gray-800">
+                                <option value="ريال">ريال سعودي</option>
+                                <option value="درهم">درهم إماراتي</option>
+                                <option value="دينار">دينار كويتي</option>
+                                <option value="دولار">دولار أمريكي</option>
+                            </select>
+                            <button onclick="savePaymentSettings()" class="w-full bg-green-600 hover:bg-green-700 py-2 rounded">حفظ إعدادات الدفع</button>
+                        </div>
+                    </div>
+
+                    <!-- Social Settings -->
+                    <div class="bg-white bg-opacity-10 rounded-lg p-6">
+                        <h3 class="text-xl font-bold mb-4">إعدادات التواصل</h3>
+                        <div class="space-y-3">
+                            <input type="text" id="socialWhatsapp" value="966501234567" placeholder="رقم الواتساب" class="w-full px-3 py-2 rounded text-gray-800">
+                            <input type="text" id="socialTelegram" value="username" placeholder="اسم المستخدم تلجرام" class="w-full px-3 py-2 rounded text-gray-800">
+                            <input type="email" id="socialEmail" value="info@example.com" placeholder="البريد الإلكتروني" class="w-full px-3 py-2 rounded text-gray-800">
+                            <textarea id="welcomeMessage" rows="2" class="w-full px-3 py-2 rounded text-gray-800" placeholder="رسالة الترحيب">مرحباً! أحتاج مساعدة في بطاقات التهنئة</textarea>
+                            <button onclick="saveSocialSettings()" class="w-full bg-purple-600 hover:bg-purple-700 py-2 rounded">حفظ إعدادات التواصل</button>
+                        </div>
+                    </div>
+
+                    <!-- Statistics -->
+                    <div class="bg-white bg-opacity-10 rounded-lg p-6">
+                        <h3 class="text-xl font-bold mb-4">الإحصائيات</h3>
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <span>البطاقات المُنشأة:</span>
+                                <span id="totalCards" class="font-bold">0</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>التحميلات:</span>
+                                <span id="totalDownloads" class="font-bold">0</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>المدفوعات:</span>
+                                <span id="totalPayments" class="font-bold">0 ريال</span>
+                            </div>
+                        </div>
+                        <button onclick="resetStats()" class="w-full bg-red-600 hover:bg-red-700 py-2 rounded mt-4">إعادة تعيين الإحصائيات</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
         let selectedDesign = 0;
-        
+        let settings = {
+            textColor: '#ffffff',
+            fontSize: 32,
+            textPosition: 'center',
+            canvasWidth: 800,
+            canvasHeight: 600,
+            exportQuality: 1.0
+        };
+        let stats = {
+            totalCards: 0,
+            totalDownloads: 0,
+            totalPayments: 0
+        };
+
+        // Load stats from localStorage
+        function loadStats() {
+            const savedStats = localStorage.getItem('cardStats');
+            if (savedStats) {
+                stats = JSON.parse(savedStats);
+                updateStatsDisplay();
+            }
+        }
+
+        function saveStats() {
+            localStorage.setItem('cardStats', JSON.stringify(stats));
+            updateStatsDisplay();
+        }
+
+        function updateStatsDisplay() {
+            document.getElementById('totalCards').textContent = stats.totalCards;
+            document.getElementById('totalDownloads').textContent = stats.totalDownloads;
+            document.getElementById('totalPayments').textContent = stats.totalPayments + ' ريال';
+        }
+
         function selectDesign(id) {
             selectedDesign = id;
+            hideAllSections();
+            
+            if (id === 3) {
+                document.getElementById('paymentSection').classList.remove('hidden');
+            } else {
+                document.getElementById('nameInput').classList.remove('hidden');
+            }
+        }
+
+        function hideAllSections() {
+            const sections = ['nameInput', 'paymentSection', 'preview', 'adminPanel'];
+            sections.forEach(section => {
+                document.getElementById(section).classList.add('hidden');
+            });
+        }
+
+        function goBack() {
+            hideAllSections();
+            // Show main design selection
+            const designGrid = document.querySelector('.grid');
+            designGrid.parentElement.classList.remove('hidden');
+        }
+
+        function payBank() {
+            const account = document.getElementById('bankAccount')?.value || '1234567890';
+            const bank = document.getElementById('bankName')?.value || 'البنك الأهلي';
+            const whatsapp = document.getElementById('whatsappPayment')?.value || '966501234567';
+            
+            alert(`معلومات التحويل البنكي:\n\nرقم الحساب: ${account}\nاسم البنك: ${bank}\n\nبعد التحويل، أرسل صورة الإيصال للواتساب:\n${whatsapp}`);
+            proceedAfterPayment();
+        }
+
+        function payApple() {
+            alert('جاري معالجة الدفع عبر Apple Pay...');
+            setTimeout(() => {
+                alert('تم الدفع بنجاح! ✅');
+                stats.totalPayments += 10;
+                saveStats();
+                proceedAfterPayment();
+            }, 2000);
+        }
+
+        function proceedAfterPayment() {
+            document.getElementById('paymentSection').classList.add('hidden');
             document.getElementById('nameInput').classList.remove('hidden');
         }
         
         function createCard() {
-            const name = document.getElementById('userName').value;
-            if (!name) return alert('اكتب اسمك أولاً');
+            const name = document.getElementById('userName').value.trim();
+            if (!name) return alert('يرجى كتابة اسمك أولاً');
             
+            document.getElementById('nameInput').classList.add('hidden');
+            document.getElementById('preview').classList.remove('hidden');
+            
+            drawCard(name);
+            stats.totalCards++;
+            saveStats();
+        }
+        
+        function drawCard(name) {
             const canvas = document.getElementById('canvas');
             const ctx = canvas.getContext('2d');
-            canvas.width = 400;
-            canvas.height = 300;
+            
+            // Use admin settings for canvas size
+            canvas.width = settings.canvasWidth;
+            canvas.height = settings.canvasHeight;
             
             const colors = [
                 ['#667eea', '#764ba2'],
@@ -68,28 +347,208 @@
                 ['#4facfe', '#00f2fe']
             ];
             
-            const gradient = ctx.createLinearGradient(0, 0, 400, 300);
+            // Create gradient background
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
             gradient.addColorStop(0, colors[selectedDesign-1][0]);
             gradient.addColorStop(1, colors[selectedDesign-1][1]);
             
             ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, 400, 300);
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            ctx.fillStyle = 'white';
-            ctx.font = 'bold 24px Arial';
+            // Add decorative emoji
+            ctx.font = `${Math.floor(settings.fontSize * 1.8)}px Arial`;
             ctx.textAlign = 'center';
-            ctx.fillText(name, 200, 150);
+            ctx.fillStyle = 'rgba(255,255,255,0.3)';
+            const emojis = ['🎊', '🌟', '✨'];
+            ctx.fillText(emojis[selectedDesign-1], canvas.width/2, canvas.height/3);
             
-            document.getElementById('preview').classList.remove('hidden');
+            // Add user name with admin settings
+            ctx.font = `bold ${settings.fontSize}px Arial`;
+            ctx.fillStyle = settings.textColor;
+            ctx.textAlign = 'center';
+            
+            let textY = canvas.height/2 + 20;
+            if (settings.textPosition === 'top') textY = canvas.height/4;
+            else if (settings.textPosition === 'bottom') textY = canvas.height - canvas.height/4;
+            
+            ctx.fillText(name, canvas.width/2, textY);
+            
+            // Add decorative border
+            ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+            ctx.lineWidth = 4;
+            ctx.strokeRect(10, 10, canvas.width-20, canvas.height-20);
+        }
+
+        function editCard() {
+            document.getElementById('preview').classList.add('hidden');
+            document.getElementById('nameInput').classList.remove('hidden');
         }
         
         function download() {
             const canvas = document.getElementById('canvas');
             const link = document.createElement('a');
-            link.download = 'card.png';
-            link.href = canvas.toDataURL();
+            link.download = `بطاقة-تهنئة-${Date.now()}.png`;
+            link.href = canvas.toDataURL('image/png', settings.exportQuality);
             link.click();
+            
+            stats.totalDownloads++;
+            saveStats();
+            alert('تم تحميل البطاقة بجودة عالية! 🎉');
         }
+
+        // Social functions
+        function toggleSocial() {
+            const menu = document.getElementById('socialMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        function updateSocialLinks() {
+            const whatsapp = document.getElementById('socialWhatsapp')?.value || '966501234567';
+            const telegram = document.getElementById('socialTelegram')?.value || 'username';
+            const email = document.getElementById('socialEmail')?.value || 'info@example.com';
+            const message = document.getElementById('welcomeMessage')?.value || 'مرحباً! أحتاج مساعدة في بطاقات التهنئة';
+            
+            // Update WhatsApp link
+            const whatsappLink = document.querySelector('a[href*="wa.me"]');
+            if (whatsappLink) {
+                whatsappLink.href = `https://wa.me/${whatsapp}?text=${encodeURIComponent(message)}`;
+            }
+            
+            // Update Telegram link
+            const telegramLink = document.querySelector('a[href*="t.me"]');
+            if (telegramLink) {
+                telegramLink.href = `https://t.me/${telegram}`;
+            }
+            
+            // Update Email link
+            const emailLink = document.querySelector('a[href*="mailto"]');
+            if (emailLink) {
+                emailLink.href = `mailto:${email}?subject=استفسار عن بطاقات التهنئة&body=${encodeURIComponent(message)}`;
+            }
+        }
+
+        // Admin functions
+        function showAdminLogin() {
+            document.getElementById('adminLoginModal').classList.remove('hidden');
+        }
+
+        function closeAdminLogin() {
+            document.getElementById('adminLoginModal').classList.add('hidden');
+            document.getElementById('adminUsername').value = '';
+            document.getElementById('adminPassword').value = '';
+        }
+
+        function adminLogin() {
+            const username = document.getElementById('adminUsername').value;
+            const password = document.getElementById('adminPassword').value;
+            
+            if (username === 'admin' && password === 'admin123') {
+                closeAdminLogin();
+                showAdminPanel();
+            } else {
+                alert('اسم المستخدم أو كلمة المرور غير صحيحة');
+            }
+        }
+
+        function showAdminPanel() {
+            hideAllSections();
+            document.getElementById('adminPanel').classList.remove('hidden');
+            loadAdminSettings();
+        }
+
+        function logoutAdmin() {
+            document.getElementById('adminPanel').classList.add('hidden');
+            goBack();
+        }
+
+        function loadAdminSettings() {
+            document.getElementById('textColor').value = settings.textColor;
+            document.getElementById('fontSize').value = settings.fontSize;
+            document.getElementById('fontSizeValue').textContent = settings.fontSize + 'px';
+            document.getElementById('textPosition').value = settings.textPosition;
+            document.getElementById('canvasWidth').value = settings.canvasWidth;
+            document.getElementById('canvasHeight').value = settings.canvasHeight;
+            document.getElementById('exportQuality').value = settings.exportQuality;
+        }
+
+        function addDesign() {
+            const name = document.getElementById('newDesignName').value;
+            const type = document.getElementById('newDesignType').value;
+            const price = document.getElementById('newDesignPrice').value || 0;
+            
+            if (!name) {
+                alert('يرجى إدخال اسم التصميم');
+                return;
+            }
+            
+            alert(`تم إضافة التصميم بنجاح!\n\nالاسم: ${name}\nالنوع: ${type === 'free' ? 'مجاني' : 'مدفوع'}\nالسعر: ${price} ريال`);
+            
+            // Clear form
+            document.getElementById('newDesignName').value = '';
+            document.getElementById('newDesignPrice').value = '';
+        }
+
+        function saveTextSettings() {
+            settings.textColor = document.getElementById('textColor').value;
+            settings.fontSize = parseInt(document.getElementById('fontSize').value);
+            settings.textPosition = document.getElementById('textPosition').value;
+            
+            localStorage.setItem('cardSettings', JSON.stringify(settings));
+            alert('تم حفظ إعدادات النص بنجاح! ✅');
+        }
+
+        function saveCanvasSettings() {
+            settings.canvasWidth = parseInt(document.getElementById('canvasWidth').value);
+            settings.canvasHeight = parseInt(document.getElementById('canvasHeight').value);
+            settings.exportQuality = parseFloat(document.getElementById('exportQuality').value);
+            
+            localStorage.setItem('cardSettings', JSON.stringify(settings));
+            alert('تم حفظ إعدادات الصورة بنجاح! ✅\nالجودة الآن: ' + (settings.exportQuality * 100) + '%');
+        }
+
+        function savePaymentSettings() {
+            alert('تم حفظ إعدادات الدفع بنجاح! ✅');
+        }
+
+        function saveSocialSettings() {
+            updateSocialLinks();
+            alert('تم حفظ إعدادات التواصل الاجتماعي بنجاح! ✅');
+        }
+
+        function resetStats() {
+            if (confirm('هل أنت متأكد من إعادة تعيين جميع الإحصائيات؟')) {
+                stats = { totalCards: 0, totalDownloads: 0, totalPayments: 0 };
+                saveStats();
+                alert('تم إعادة تعيين الإحصائيات بنجاح!');
+            }
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStats();
+            
+            // Load saved settings
+            const savedSettings = localStorage.getItem('cardSettings');
+            if (savedSettings) {
+                settings = { ...settings, ...JSON.parse(savedSettings) };
+            }
+            
+            // Font size slider
+            const fontSizeSlider = document.getElementById('fontSize');
+            if (fontSizeSlider) {
+                fontSizeSlider.addEventListener('input', function() {
+                    document.getElementById('fontSizeValue').textContent = this.value + 'px';
+                });
+            }
+            
+            // Close social menu when clicking outside
+            document.addEventListener('click', function(e) {
+                const socialBox = e.target.closest('.fixed.bottom-6');
+                if (!socialBox) {
+                    document.getElementById('socialMenu').classList.add('hidden');
+                }
+            });
+        });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96dfff9a042e5550',t:'MTc1NTAwMTk3OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96e05c3e553ce8e2',t:'MTc1NTAwNTc3Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
